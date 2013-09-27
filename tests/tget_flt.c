@@ -28,9 +28,17 @@ int
 main (void)
 {
   mpfr_t x, y;
-  float f, g, infp;
+  float f, g;
   int i;
+#if !defined(MPFR_ERRDIVZERO)
+  float infp;
+#endif
 
+  tests_start_mpfr ();
+
+#if !defined(MPFR_ERRDIVZERO)
+  /* The definition of DBL_POS_INF involves a division by 0. This makes
+     "clang -O2 -fsanitize=undefined -fno-sanitize-recover" fail. */
   infp = (float) DBL_POS_INF;
   if (infp * 0.5 != infp)
     {
@@ -38,8 +46,7 @@ main (void)
       fprintf (stderr, "(this is probably a compiler bug, please report)\n");
       exit (1);
     }
-
-  tests_start_mpfr ();
+#endif
 
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
@@ -353,6 +360,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
+#if !defined(MPFR_ERRDIVZERO)
   f = mpfr_get_flt (x, MPFR_RNDN); /* first round to 2^128 (even rule),
                                       thus we should get +Inf */
   g = infp;
@@ -376,6 +384,7 @@ main (void)
       printf ("expected %.8e, got %.8e\n", g, f);
       exit (1);
     }
+#endif
 
   mpfr_clear (x);
   mpfr_clear (y);
