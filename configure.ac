@@ -435,23 +435,29 @@ if test "$use_gmp_build" = yes ; then
    ])
 fi
 
-dnl Check for valid GMP_NUMB_BITS and BYTES_PER_MP_LIMB
+dnl Check for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency.
+dnl Problems may occur if gmp.h was generated with some ABI
+dnl and is used with another ABI (or if nails are used).
 dnl This test doesn't need to link with libgmp (at least it shouldn't).
-if test "$use_gmp_build" = yes ; then
-  AC_MSG_CHECKING(for valid GMP_NUMB_BITS)
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+AC_MSG_CHECKING(for GMP_NUMB_BITS and sizeof(mp_limb_t) consistency)
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
 #include <limits.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 ]], [[
-  return GMP_NUMB_BITS == BYTES_PER_MP_LIMB * CHAR_BIT
-         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+  if (GMP_NUMB_BITS == sizeof(mp_limb_t) * CHAR_BIT)
+    return 0;
+  fprintf (stderr, "GMP_NUMB_BITS     = %ld\n", (long) GMP_NUMB_BITS);
+  fprintf (stderr, "sizeof(mp_limb_t) = %ld\n", (long) sizeof(mp_limb_t));
+  fprintf (stderr, "sizeof(mp_limb_t) * CHAR_BIT = %ld != GMP_NUMB_BITS\n",
+           (long) (sizeof(mp_limb_t) * CHAR_BIT));
+  return 1;
 ]])], [AC_MSG_RESULT(yes)], [
        AC_MSG_RESULT(no)
-       AC_MSG_ERROR([GMP_NUMB_BITS is incorrect.
-You probably need to change some of the GMP or MPFR compile options.])],
+       AC_MSG_ERROR([GMP_NUMB_BITS and sizeof(mp_limb_t) are not consistent.
+You probably need to change some of the GMP or MPFR compile options.
+See 'config.log' for details (search for GMP_NUMB_BITS).])],
        [AC_MSG_RESULT([can't test])])
-fi
 
 
 dnl We really need to link using libtool. But it is impossible with the current
