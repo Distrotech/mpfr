@@ -1184,6 +1184,69 @@ check_emax (void)
   check_emax_aux (MPFR_EMAX_MAX);
 }
 
+static void
+check_emin_aux (mpfr_exp_t e)
+{
+  mpfr_t x;
+  char *s1, s2[256];
+  int i;
+  mpfr_exp_t emin;
+  mpz_t ee;
+
+  MPFR_ASSERTN (e >= LONG_MIN);
+  emin = mpfr_get_emin ();
+  set_emin (e);
+
+  mpfr_init2 (x, 16);
+  mpz_init (ee);
+
+  mpfr_setmin (x, e);
+  mpz_set_si (ee, e);
+  mpz_sub_ui (ee, ee, 1);
+
+  i = mpfr_asprintf (&s1, "%Ra", x);
+  MPFR_ASSERTN (i > 0);
+
+  gmp_snprintf (s2, 256, "0x1p%Zd", ee);
+
+  if (strcmp (s1, s2) != 0)
+    {
+      printf ("Error in check_emin_aux for emin = %ld\n", (long) e);
+      printf ("Expected %s\n", s2);
+      printf ("Got      %s\n", s1);
+      exit (1);
+    }
+
+  mpfr_free_str (s1);
+
+  i = mpfr_asprintf (&s1, "%Rb", x);
+  MPFR_ASSERTN (i > 0);
+
+  gmp_snprintf (s2, 256, "1p%Zd", ee);
+
+  if (strcmp (s1, s2) != 0)
+    {
+      printf ("Error in check_emin_aux for emin = %ld\n", (long) e);
+      printf ("Expected %s\n", s2);
+      printf ("Got      %s\n", s1);
+      exit (1);
+    }
+
+  mpfr_free_str (s1);
+
+  mpfr_clear (x);
+  mpz_clear (ee);
+  set_emin (emin);
+}
+
+static void
+check_emin (void)
+{
+  check_emin_aux (-15);
+  check_emin_aux (mpfr_get_emin ());
+  check_emin_aux (MPFR_EMIN_MIN);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1203,6 +1266,7 @@ main (int argc, char **argv)
   decimal ();
   mixed ();
   check_emax ();
+  check_emin ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   locale_da_DK ();
