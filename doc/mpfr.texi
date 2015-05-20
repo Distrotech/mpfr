@@ -13,7 +13,7 @@
 
 @c Note: avoid using non-ASCII characters directly when possible,
 @c as the "info" utility cannot currently handle them.
-@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
+@c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=212549
 
 @copying
 This manual documents how to install and use the Multiple Precision
@@ -29,7 +29,9 @@ license is included in @ref{GNU Free Documentation License}.
 @end copying
 
 
-@c  Texinfo version 4.2 or up will be needed to process this file.
+@c  Texinfo version 4.2 or later will be needed to process this file.
+@c  Texinfo version 5.0 or later should be used since the formatting
+@c  has been modified for this version (tested with 5.2).
 @c
 @c  A suitable texinfo.tex is supplied, a newer one should work
 @c  equally well.
@@ -270,14 +272,18 @@ precise semantics. The main characteristics of MPFR, which make it differ
 from most arbitrary precision floating-point software tools, are:
 
 @itemize @bullet
+
 @item the MPFR code is portable, i.e., the result of any operation
 does not depend on the machine word size
 @code{mp_bits_per_limb} (64 on most current processors);
+
 @item the precision in bits can be set @emph{exactly} to any valid value
 for each variable (including very small precision);
+
 @item MPFR provides the four rounding modes from the IEEE 754-1985
 standard, plus away-from-zero, as well as for basic operations as for other
 mathematical functions.
+
 @end itemize
 
 In particular, with a precision of 53 bits, MPFR is able to
@@ -403,6 +409,7 @@ as argument to @samp{--prefix} instead of @file{/usr/local}).
 There are some other useful make targets:
 
 @itemize @bullet
+
 @item
 @samp{mpfr.info} or @samp{info}
 
@@ -447,6 +454,7 @@ Delete all generated files not included in the distribution.
 @samp{uninstall}
 
 Delete all files copied by @samp{make install}.
+
 @end itemize
 
 
@@ -602,7 +610,7 @@ gcc myprogram.c -lmpfr -lgmp
 MPFR is built using Libtool and an application can use that to link if
 desired, @MPFRpxreftop{libtool.info, GNU Libtool}
 @c Note: the .info extension has been added to avoid the following bug:
-@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
+@c   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
 @c which occurs when reading the info file from the build directory:
 @c   info ./mpfr    or    info -f ./mpfr.info
 @c Due to a poor design, the "info" utility will not find the correct
@@ -703,7 +711,6 @@ and puts the result back in @var{x}.
 @section Rounding Modes
 
 The following five rounding modes are supported:
-
 @itemize @bullet
 @item @code{MPFR_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008),
 @item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008),
@@ -1071,12 +1078,16 @@ This macro is much faster than using @code{mpfr_init2} but has some
 drawbacks:
 
 @itemize @bullet
+
 @item You @strong{must not} call @code{mpfr_clear} with variables
 created with this macro (the storage is allocated at the point of declaration
 and deallocated when the brace-level is exited).
+
 @item You @strong{cannot} change their precision.
+
 @item You @strong{should not} create variables with huge precision with this
 macro.
+
 @item Your compiler must support @samp{Non-Constant Initializers} (standard
 in C++ and ISO C99) and @samp{Token Pasting}
 (standard in ISO C89). If @var{prec} is not a constant expression, your
@@ -1085,6 +1096,7 @@ in ISO C99). GCC 2.95.3 and above supports all these features.
 If you compile your program with GCC in C89 mode and with @samp{-pedantic},
 you may want to define the @code{MPFR_USE_EXTENSION} macro to avoid warnings
 due to the @code{MPFR_DECL_INIT} implementation.
+
 @end itemize
 @end defmac
 
@@ -1142,6 +1154,10 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_prec_round} instead.
+
+Warning! You must not use this function if @var{x} was initialized
+with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
+(@pxref{Custom Interface}).
 @end deftypefun
 
 @deftypefun mpfr_prec_t mpfr_get_prec (mpfr_t @var{x})
@@ -1235,7 +1251,6 @@ an overflow.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mpfr_rnd_t @var{rnd})
-
 Read a floating-point number from a string @var{nptr} in base @var{base},
 rounded in the direction @var{rnd}; @var{base} must be either 0 (to
 detect the base, as described below) or a number from 2 to 62 (otherwise
@@ -1311,10 +1326,16 @@ in @code{mpfr_set_nan}, the sign bit of the result is unspecified.
 @end deftypefun
 
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})
-Swap the values @var{x} and @var{y} efficiently. Warning: the
-precisions are exchanged too; in case the precisions are different,
-@code{mpfr_swap} is thus not equivalent to three @code{mpfr_set} calls
-using a third auxiliary variable.
+Swap the structures pointed to by @var{x} and @var{y}. In particular,
+the values are exchanged without rounding (this may be different from
+three @code{mpfr_set} calls using a third auxiliary variable).
+
+Warning! Since the precisions are exchanged, this will affect future
+assignments. Moreover, since the significand pointers are also exchanged,
+you must not use this function if the allocation method used for @var{x}
+and/or @var{y} does not permit it. This is the case when @var{x} and/or
+@var{y} were declared and initialized with @code{MPFR_DECL_INIT}, and
+possibly with @code{mpfr_custom_init_set} (@pxref{Custom Interface}).
 @end deftypefun
 
 @node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, MPFR Interface
@@ -1438,7 +1459,7 @@ Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
 @var{rnd}.
 The @emph{erange} flag is set if @var{op} is NaN or an infinity, which
 do not exist in MPF.  If @var{op} is NaN, then @var{rop} is undefined.
-If @var{op} is an +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
+If @var{op} is +Inf (resp.@: @minus{}Inf), then @var{rop} is set to
 the maximum (resp.@: minimum) value in the precision of the MPF number;
 if a future MPF version supports infinities, this behavior will be
 considered incorrect and will change (portable programs should assume
@@ -1452,12 +1473,13 @@ than in MPFR, so that an overflow or underflow is not possible.
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mpfr_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
-number of significant digits output in the string;
-in the latter case, @var{n} must be greater
-or equal to 2. The base may vary from 2 to 62.
+number of significant digits output in the string; in the latter case,
+@var{n} must be greater or equal to 2. The base may vary from 2 to 62;
+otherwise the function does nothing and immediately returns a null pointer.
 If the input number is an ordinary number, the exponent is written through
 the pointer @var{expptr} (for input 0, the current minimal exponent is
-written).
+written); the type @code{mpfr_exp_t} is large enough to hold the exponent
+in all cases.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
@@ -1492,17 +1514,20 @@ but in some very rare cases, it might be @math{m+1}
 for bases 7 and 49).
 
 If @var{str} is a null pointer, space for the significand is allocated using
-the current allocation function, and a pointer to the string is returned.
+the current allocation function and a pointer to the string is returned
+(unless the base is invalid).
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
 character, and the value 7 accounts for @code{-@@Inf@@}
-plus the terminating null character.
+plus the terminating null character. The pointer to the string @var{str}
+is returned (unless the base is invalid).
 
-A pointer to the string is returned, unless there is an error, in which
-case a null pointer is returned.
+Note: The NaN and inexact flags are currently not set when need be; this
+will be fixed in future versions. Programmers should currently assume that
+whether the flags by this function are set is unspecified.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
@@ -2249,10 +2274,11 @@ not be used with other types.
 With conversion specification not involving @samp{P} and @samp{R} types,
 @code{mpfr_printf} behaves exactly as @code{gmp_printf}.
 
-The @samp{P} type specifies that a following @samp{o}, @samp{u}, @samp{x}, or
-@samp{X} conversion specifier applies to a @code{mpfr_prec_t} argument.
+The @samp{P} type specifies that a following @samp{d}, @samp{i},
+@samp{o}, @samp{u}, @samp{x}, or @samp{X} conversion specifier applies
+to a @code{mpfr_prec_t} argument.
 It is needed because the @code{mpfr_prec_t} type does not necessarily
-correspond to an @code{unsigned int} or any fixed standard type.
+correspond to an @code{int} or any fixed standard type.
 The @samp{precision} field specifies the minimum number of digits to
 appear. The default @samp{precision} is 1.
 For example:
@@ -2570,6 +2596,10 @@ already an approximation to @var{n} bits:
   mpfr_prec_round (x, 2 * n, MPFR_RNDN); /* exact */
   mpfr_add (x, x, t, MPFR_RNDN);      /* x is correct to 2n bits */
 @end example
+
+Warning! You must not use this function if @var{x} was initialized
+with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
+(@pxref{Custom Interface}).
 @end deftypefun
 
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{err}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
@@ -2588,10 +2618,11 @@ is twice as large as with a directed rounding for @var{rnd1}.
 Note: if one wants to also determine the correct @ref{ternary value} when
 rounding @var{b} to precision @var{prec} with rounding mode @var{rnd},
 a useful trick is the following:
-@verbatim
-if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ, prec + (rnd == MPFR_RNDN)))
+@example
+if (mpfr_can_round (b, err, MPFR_RNDN, MPFR_RNDZ,
+    prec + (rnd == MPFR_RNDN)))
    ...
-@end verbatim
+@end example
 Indeed, if @var{rnd} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
@@ -2967,10 +2998,10 @@ inexact, @emph{erange}) flag, which is non-zero iff the flag is set.
 A header file @file{mpf2mpfr.h} is included in the distribution of MPFR for
 compatibility with the GNU MP class MPF.
 By inserting the following two lines after the @code{#include <gmp.h>} line,
-@verbatim
+@example
 #include <mpfr.h>
 #include <mpf2mpfr.h>
-@end verbatim
+@end example
 @noindent
 any program written for
 MPF can be compiled directly with MPFR without any changes
@@ -3032,12 +3063,17 @@ such applications are able to use MPFR, an auxiliary memory interface has
 been created: the Custom Interface.
 
 The following interface allows one to use MPFR in two ways:
+
 @itemize
+
 @item Either directly store a floating-point number as a @code{mpfr_t}
 on the stack.
+
 @item Either store its own representation on the
 stack and construct a new temporary @code{mpfr_t} each time it is needed.
+
 @end itemize
+
 Nothing has to be done to destroy the floating-point
 numbers except garbaging the used
 memory: all the memory management (allocating, destroying, garbaging) is left
