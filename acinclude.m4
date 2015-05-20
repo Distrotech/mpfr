@@ -101,7 +101,7 @@ alpha*-*-*)
     mpfr_cv_ieee_switches="-fprm d -ieee_with_inexact"
   fi
   CFLAGS="$CFLAGS $mpfr_cv_ieee_switches"
-  AC_TRY_COMPILE(,,, mpfr_cv_ieee_switches="none")
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])], , mpfr_cv_ieee_switches="none")
   ])
   if test "$mpfr_cv_ieee_switches" = "none"; then
     CFLAGS="$saved_CFLAGS"
@@ -120,7 +120,7 @@ if test "$ac_cv_type_intmax_t" = yes; then
   AC_CACHE_CHECK([for working INTMAX_MAX], mpfr_cv_have_intmax_max, [
     saved_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$srcdir/src"
-    AC_TRY_COMPILE([#include "mpfr-intmax.h"], [intmax_t x = INTMAX_MAX;],
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "mpfr-intmax.h"]], [[intmax_t x = INTMAX_MAX;]])],
       mpfr_cv_have_intmax_max=yes, mpfr_cv_have_intmax_max=no)
     CPPFLAGS="$saved_CPPFLAGS"
   ])
@@ -141,7 +141,7 @@ dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"
 LIBS="$LIBS $MPFR_LIBM"
-AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fenv.h>]], [[fesetround(FE_TONEAREST);]])],
   mpfr_cv_have_fesetround=yes, mpfr_cv_have_fesetround=no)
 LIBS="$saved_LIBS"
 ])
@@ -158,7 +158,7 @@ if test -n "$GCC"; then
   AC_CACHE_CHECK([for gcc float-conversion bug], mpfr_cv_gcc_floatconv_bug, [
   saved_LIBS="$LIBS"
   LIBS="$LIBS $MPFR_LIBM"
-  AC_TRY_RUN([
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <float.h>
 #ifdef MPFR_HAVE_FESETROUND
 #include <fenv.h>
@@ -183,7 +183,8 @@ int main() {
   return 0;
 }
 static double get_max (void) { static volatile double d = DBL_MAX; return d; }
-  ], [mpfr_cv_gcc_floatconv_bug="no"],
+  ]])],
+     [mpfr_cv_gcc_floatconv_bug="no"],
      [mpfr_cv_gcc_floatconv_bug="yes, use -ffloat-store"],
      [mpfr_cv_gcc_floatconv_bug="cannot test, use -ffloat-store"])
   LIBS="$saved_LIBS"
@@ -195,15 +196,17 @@ fi
 
 dnl Check if subnormal (denormalized) numbers are supported
 AC_CACHE_CHECK([for subnormal numbers], mpfr_cv_have_denorms, [
-AC_TRY_RUN([
-#include <math.h>
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 int main() {
   double x = 2.22507385850720138309e-308;
   fprintf (stderr, "%e\n", x / 2.0);
   return 2.0 * (x / 2.0) != x;
 }
-], mpfr_cv_have_denorms=yes, mpfr_cv_have_denorms=no, mpfr_cv_have_denorms=no)
+]])],
+   [mpfr_cv_have_denorms="yes"],
+   [mpfr_cv_have_denorms="no"],
+   [mpfr_cv_have_denorms="cannot test, assume no"])
 ])
 if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if subnormal (denormalized) floats work.])
@@ -215,14 +218,15 @@ dnl involving a FP division by 0.
 dnl For the developers: to check whether all these tests are disabled,
 dnl configure MPFR with "-DMPFR_TEST_DIVBYZERO=1 -DMPFR_ERRDIVZERO=1".
 AC_CACHE_CHECK([if the FP division by 0 fails], mpfr_cv_errdivzero, [
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 int main() {
   volatile double d = 0.0, x;
   x = 0.0 / d;
   x = 1.0 / d;
   return 0;
 }
-], [mpfr_cv_errdivzero="no"],
+]])],
+   [mpfr_cv_errdivzero="no"],
    [mpfr_cv_errdivzero="yes"],
    [mpfr_cv_errdivzero="cannot test, assume no"])
 ])
@@ -237,7 +241,7 @@ dnl Check whether NAN != NAN (as required by the IEEE-754 standard,
 dnl but not by the ISO C standard). For instance, this is false with
 dnl MIPSpro 7.3.1.3m under IRIX64. By default, assume this is true.
 AC_CACHE_CHECK([if NAN == NAN], mpfr_cv_nanisnan, [
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <math.h>
 #ifndef NAN
@@ -248,7 +252,8 @@ int main() {
   d = NAN;
   return d != d;
 }
-], [mpfr_cv_nanisnan="yes"],
+]])],
+   [mpfr_cv_nanisnan="yes"],
    [mpfr_cv_nanisnan="no"],
    [mpfr_cv_nanisnan="cannot test, assume no"])
 ])
@@ -469,7 +474,7 @@ struct {
 };
 ]
 EOF
-  mpfr_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >&AC_FD_CC 2>&1"
+  mpfr_compile="$CC $CFLAGS $CPPFLAGS -c conftest.c >&AS_MESSAGE_LOG_FD 2>&1"
   if AC_TRY_EVAL(mpfr_compile); then
     cat >conftest.awk <<\EOF
 [
@@ -729,8 +734,8 @@ EOF
     mpfr_cv_c_long_double_format=`od -b conftest.$OBJEXT | $AWK -f conftest.awk`
     case $mpfr_cv_c_long_double_format in
     unknown*)
-      echo "cannot match anything, conftest.$OBJEXT contains" >&AC_FD_CC
-      od -b conftest.$OBJEXT >&AC_FD_CC
+      echo "cannot match anything, conftest.$OBJEXT contains" >&AS_MESSAGE_LOG_FD
+      od -b conftest.$OBJEXT >&AS_MESSAGE_LOG_FD
       ;;
     esac
   else
@@ -835,7 +840,7 @@ dnl  as a fallback.
 AC_DEFUN([GMP_C_ATTRIBUTE_MODE],
 [AC_CACHE_CHECK([whether gcc __attribute__ ((mode (XX))) works],
                gmp_cv_c_attribute_mode,
-[AC_TRY_COMPILE([typedef int SItype __attribute__ ((mode (SI)));], ,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[typedef int SItype __attribute__ ((mode (SI)));]], [[]])],
  gmp_cv_c_attribute_mode=yes, gmp_cv_c_attribute_mode=no)
 ])
 if test $gmp_cv_c_attribute_mode = yes; then
@@ -868,7 +873,9 @@ $3
   [AC_MSG_RESULT(yes)
   $4],
   [AC_MSG_RESULT(no)
-  $5])
+  $5],
+  [AC_MSG_RESULT(cross-compiling, assuming yes)
+  $4])
 ])
 
 
