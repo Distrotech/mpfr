@@ -11,34 +11,39 @@
 
 AUTOMAKE_OPTIONS = 1.6 gnu
 
-# tversion is run
-#   * at the beginning so that the user gets a possible version error
-#     before any other one (the version error may be the cause of the
-#     other errors), and
-#   * at the end so that the error message is also near the end of the
-#     output.
-check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck	\
-     tisnan texceptions tset_exp tset mpf_compat mpfr_compat	\
-     reuse tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm	\
-     tai tasin tasinh tatan tatanh taway tbuildopt tcan_round	\
-     tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs		\
-     tcomparisons tconst_catalan tconst_euler tconst_log2	\
-     tconst_pi tcopysign tcos tcosh tcot tcoth tcsc tcsch	\
-     td_div td_sub tdigamma tdim tdiv tdiv_d tdiv_ui teint teq	\
-     terf texp texp10 texp2 texpm1 tfactorial tfits tfma tfmod	\
-     tfms tfprintf tfrac tfrexp tgamma tget_flt tget_d tget_d_2exp \
-     tget_f tget_ld_2exp tget_set_d64 tget_sj tget_str tget_z	\
+check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck		\
+     tisnan texceptions tset_exp tset mpf_compat mpfr_compat		\
+     reuse tabs tacos tacosh tadd tadd1sp tadd_d tadd_ui tagm		\
+     tai tasin tasinh tatan tatanh taway tbuildopt tcan_round		\
+     tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs			\
+     tcomparisons tconst_catalan tconst_euler tconst_log2		\
+     tconst_pi tcopysign tcos tcosh tcot tcoth tcsc tcsch		\
+     td_div td_sub tdigamma tdim tdiv tdiv_d tdiv_ui teint teq		\
+     terf texp texp10 texp2 texpm1 tfactorial tfits tfma tfmod		\
+     tfms tfprintf tfrac tfrexp tgamma tget_flt tget_d tget_d_2exp 	\
+     tget_f tget_ld_2exp tget_set_d64 tget_sj tget_str tget_z		\
      tgmpop tgrandom thyperbolic thypot tinp_str tj0 tj1 tjn tl2b	\
-     tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2 tmin_prec	\
-     tminmax tmodf tmul tmul_2exp tmul_d tmul_ui tnext		\
-     tout_str toutimpl tpow tpow3 tpow_all tpow_z tprintf	\
-     trandom trec_sqrt tremquo trint troot tround_prec tsec	\
-     tsech tset_d tset_f tset_ld tset_q tset_si tset_sj		\
-     tset_str tset_z tset_z_exp tsi_op tsin tsin_cos tsinh	\
+     tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2 tmin_prec		\
+     tminmax tmodf tmul tmul_2exp tmul_d tmul_ui tnext			\
+     tout_str toutimpl tpow tpow3 tpow_all tpow_z tprintf		\
+     trandom trec_sqrt tremquo trint troot tround_prec tsec		\
+     tsech tset_d tset_f tset_ld tset_q tset_si tset_sj			\
+     tset_str tset_z tset_z_exp tsi_op tsin tsin_cos tsinh		\
      tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui tstckintc tstdint tstrtofr	\
-     tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan	\
-     ttanh ttrunc tui_div tui_pow tui_sub turandom 	 \
-      tvalist ty0 ty1 tyn tzeta tzeta_ui tversion
+     tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan		\
+     ttanh ttrunc tui_div tui_pow tui_sub turandom 	 		\
+     tvalist ty0 ty1 tyn tzeta tzeta_ui
+
+# Before Automake 1.13, we ran tversion at the beginning and at the end
+# of the tests, and output from tversion appeared at the same place as
+# the tests results (make output). With Automake 1.13+, the tests are
+# parallelized by default and their output is sent to log files instead
+# of the make output, so that the user could no longer see information
+# from tversion. To mimic the old behavior, we now output the contents
+# of the tversion log file if this file exists (i.e. if the Makefile
+# has been generated with Automake 1.13+).
+check:
+	cat tversion.log 2> /dev/null || true
 
 AM_CPPFLAGS = -DSRCDIR='"$(srcdir)"'
 
