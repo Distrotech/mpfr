@@ -836,6 +836,8 @@ mixed (void)
   return 0;
 }
 
+#if MPFR_LCONV_DPTS
+
 /* Check with locale "da_DK". On most platforms, decimal point is ','
    and thousands separator is '.'; the test is not performed if this
    is not the case or if the locale doesn't exist. */
@@ -881,6 +883,8 @@ locale_da_DK (void)
   mpfr_clear (x);
   return 0;
 }
+
+#endif  /* MPFR_LCONV_DPTS */
 
 /* check concordance between mpfr_asprintf result with a regular mpfr float
    and with a regular double float */
@@ -1269,8 +1273,10 @@ main (int argc, char **argv)
   check_emin ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+#if MPFR_LCONV_DPTS
   locale_da_DK ();
-
+  /* Avoid a warning by doing the setlocale outside of this #if */
+#endif
   setlocale (LC_ALL, locale);
 #endif
 
