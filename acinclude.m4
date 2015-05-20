@@ -29,11 +29,13 @@ AC_PREREQ(2.60)
 dnl ------------------------------------------------------------
 dnl You must put in MPFR_CONFIGS everything which configure MPFR
 dnl except:
-dnl   -everything dealing with CC and CFLAGS in particular the ABI
-dnl   but the IEEE-754 specific flags must be set here.
-dnl   -GMP's linkage.
-dnl   -Libtool stuff.
-dnl   -Handling of special arguments of MPFR's configure.
+dnl   - Everything dealing with CC and CFLAGS in particular the ABI
+dnl     but the IEEE-754 specific flags must be set here.
+dnl   - Tests that depend on gmp.h (see MPFR_CHECK_DBL2INT_BUG as an example:
+dnl     a function needs to be defined and called in configure.ac).
+dnl   - GMP's linkage.
+dnl   - Libtool stuff.
+dnl   - Handling of special arguments of MPFR's configure.
 AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
@@ -415,6 +417,116 @@ CPPFLAGS="$saved_CPPFLAGS"
 fi
 ])
 dnl end of MPFR_CONFIGS
+
+
+dnl MPFR_CHECK_GMP
+dnl --------------
+dnl Check GMP library vs header. Useful if the user provides --with-gmp
+dnl with a directory containing a GMP version that doesn't have the
+dnl correct ABI: the previous tests won't trigger the error if the same
+dnl GMP version with the right ABI is installed on the system, as this
+dnl library is automatically selected by the linker, while the header
+dnl (which depends on the ABI) of the --with-gmp include directory is
+dnl used.
+dnl Note: if the error is changed to a warning due to that fact that
+dnl libtool is not used, then the same thing should be done for the
+dnl other tests based on GMP.
+AC_DEFUN([MPFR_CHECK_GMP], [
+AC_REQUIRE([MPFR_CONFIGS])dnl
+AC_CACHE_CHECK([for GMP library vs header correctness], mpfr_cv_check_gmp, [
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+#include <limits.h>
+#include <gmp.h>
+]], [[
+  fprintf (stderr, "GMP_NAIL_BITS     = %d\n", (int) GMP_NAIL_BITS);
+  fprintf (stderr, "GMP_NUMB_BITS     = %d\n", (int) GMP_NUMB_BITS);
+  fprintf (stderr, "mp_bits_per_limb  = %d\n", (int) mp_bits_per_limb);
+  fprintf (stderr, "sizeof(mp_limb_t) = %d\n", (int) sizeof(mp_limb_t));
+  if (GMP_NAIL_BITS != 0)
+    {
+      fprintf (stderr, "GMP_NAIL_BITS != 0\n");
+      return 1;
+    }
+  if (GMP_NUMB_BITS != mp_bits_per_limb)
+    {
+      fprintf (stderr, "GMP_NUMB_BITS != mp_bits_per_limb\n");
+      return 2;
+    }
+  if (GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT)
+    {
+      fprintf (stderr, "GMP_NUMB_BITS != sizeof(mp_limb_t) * CHAR_BIT\n");
+      return 3;
+    }
+  return 0;
+]])], [mpfr_cv_check_gmp="yes"],
+      [mpfr_cv_check_gmp="no (exit status is $?)"],
+      [mpfr_cv_check_gmp="cannot test, assume yes"])
+])
+case $mpfr_cv_check_gmp in
+no*)
+  AC_MSG_ERROR([bad GMP library or header - ABI problem?
+See 'config.log' for details.])
+esac
+])
+
+
+dnl MPFR_CHECK_DBL2INT_BUG
+dnl ----------------------
+dnl Check for double-to-integer conversion bug
+dnl https://gforge.inria.fr/tracker/index.php?func=detail&aid=14435
+dnl For the exit status, the lowest values (including some values after 128)
+dnl are reserved for various system errors. So, let's use the largest values
+dnl below 255 for errors in the test itself.
+dnl The following problem has been seen under Solaris in config.log,
+dnl i.e. the failure to link with libgmp wasn't detected in the first
+dnl test:
+dnl   configure: checking if gmp.h version and libgmp version are the same
+dnl   configure: gcc -o conftest -Wall -Wmissing-prototypes [...]
+dnl   configure: $? = 0
+dnl   configure: ./conftest
+dnl   ld.so.1: conftest: fatal: libgmp.so.10: open failed: No such file [...]
+dnl   configure: $? = 0
+dnl   configure: result: yes
+dnl   configure: checking for double-to-integer conversion bug
+dnl   configure: gcc -o conftest -Wall -Wmissing-prototypes [...]
+dnl   configure: $? = 0
+dnl   configure: ./conftest
+dnl   ld.so.1: conftest: fatal: libgmp.so.10: open failed: No such file [...]
+dnl   ./configure[1680]: eval: line 1: 1971: Killed
+dnl   configure: $? = 9
+dnl   configure: program exited with status 9
+AC_DEFUN([MPFR_CHECK_DBL2INT_BUG], [
+AC_REQUIRE([MPFR_CONFIGS])dnl
+AC_CACHE_CHECK([for double-to-integer conversion bug], mpfr_cv_dbl_int_bug, [
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <gmp.h>
+]], [[
+  double d;
+  mp_limb_t u;
+  int i;
+
+  d = 1.0;
+  for (i = 0; i < GMP_NUMB_BITS - 1; i++)
+    d = d + d;
+  u = (mp_limb_t) d;
+  for (; i > 0; i--)
+    {
+      if (u & 1)
+        break;
+      u = u >> 1;
+    }
+  return (i == 0 && u == 1UL) ? 0 : 254 - i;
+]])], [mpfr_cv_dbl_int_bug="no"],
+      [mpfr_cv_dbl_int_bug="yes or failed to exec (exit status is $?)"],
+      [mpfr_cv_dbl_int_bug="cannot test, assume not present"])
+])
+case $mpfr_cv_dbl_int_bug in
+yes*)
+  AC_MSG_ERROR([double-to-integer conversion is incorrect.
+You need to use another compiler (or lower the optimization level).])
+esac
+])
 
 
 dnl  MPFR_C_LONG_DOUBLE_FORMAT
@@ -919,7 +1031,7 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #else
 #include <stddef.h>
 #endif
-#include "gmp.h"
+#include <gmp.h>
     ],,
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])
