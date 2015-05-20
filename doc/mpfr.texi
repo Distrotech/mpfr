@@ -1527,7 +1527,7 @@ is returned (unless the base is invalid).
 
 Note: The NaN and inexact flags are currently not set when need be; this
 will be fixed in future versions. Programmers should currently assume that
-whether the flags by this function are set is unspecified.
+whether the flags are set by this function is unspecified.
 @end deftypefun
 
 @deftypefun void mpfr_free_str (char *@var{str})
