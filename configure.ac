@@ -238,6 +238,15 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
 
+dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
+dnl (note that it is not guaranteed to be available because it may
+dnl be disabled in the GCC build). See:
+dnl   http://gcc.gnu.org/gcc-4.3/changes.html
+dnl _Decimal64 is not yet defined in GCC for C++:
+dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364
+dnl _Decimal64 support is broken with GCC 4.6.3 and 4.7.2 on powerpc64
+dnl with the mode32 ABI, e.g. "-m32 -mpowerpc64 -mtune=970 -O3"; this
+dnl is detected by the x != x test below.
 AC_ARG_ENABLE(decimal-float,
    [  --enable-decimal-float  build conversion functions from/to decimal floats
                           [[default=no]]],
@@ -259,22 +268,29 @@ AC_ARG_ENABLE(decimal-float,
 #endif]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
                   AC_MSG_ERROR([decimal float support requires _GMP_IEEE_FLOATS])])
               ],
-              [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.2, configured with --enable-decimal-float]
-           )])
+              [AC_MSG_RESULT(no)
+AC_MSG_ERROR([Compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
+Please use another compiler or build MPFR without --enable-decimal-float.])]
+           )
            AC_MSG_CHECKING(decimal float format)
            AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdlib.h>
 ]], [[
+volatile _Decimal64 x = 1;
 union { double d; _Decimal64 d64; } y;
+if (x != x) return 3;
 y.d64 = 1234567890123456.0dd;
 return y.d == 0.14894469406741037E-123 ? 0 :
        y.d == 0.59075095508629822E-68  ? 1 : 2;
 ]])], [AC_MSG_RESULT(DPD)
        AC_DEFINE([DPD_FORMAT],1,[])],
-      [if test "$?" != 1 ; then
-          AC_MSG_FAILURE(neither DPD nor BID)
-       fi
-       AC_MSG_RESULT(BID)],
+      [case "$?" in
+         1) AC_MSG_RESULT(BID) ;;
+         2) AC_MSG_FAILURE(neither DPD nor BID) ;;
+         3) AC_MSG_FAILURE([_Decimal64 support is broken.
+Please use another compiler or build MPFR without --enable-decimal-float.]) ;;
+         *) AC_MSG_FAILURE(internal error) ;;
+       esac],
       [AC_MSG_RESULT(assuming DPD)
        AC_DEFINE([DPD_FORMAT],1,[])])
            ;;
