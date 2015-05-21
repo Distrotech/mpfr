@@ -377,7 +377,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
  ******************** Assertions **********************
  ******************************************************/
 
-/* Compile with -DWANT_ASSERT to check all assert statements */
+/* Compile with -DMPFR_WANT_ASSERT to check all assert statements */
 
 /* Note: do not use GMP macros ASSERT_ALWAYS and ASSERT as they are not
    expressions, and as a consequence, they cannot be used in a for(),
@@ -388,7 +388,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY( (ASSERT_FAIL(expr),0) )))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
-#ifdef WANT_ASSERT
+#ifdef MPFR_WANT_ASSERT
 # define MPFR_EXP_CHECK 1
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 #else
@@ -737,8 +737,8 @@ typedef intmax_t mpfr_eexp_t;
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
    unless when the exponent may be out-of-range, for instance when
    setting the exponent before calling mpfr_check_range.
-   MPFR_EXP_CHECK is defined when WANT_ASSERT is defined, but if you
-   don't use WANT_ASSERT (for speed reasons), you can still define
+   MPFR_EXP_CHECK is defined when MPFR_WANT_ASSERT is defined, but if you
+   don't use MPFR_WANT_ASSERT (for speed reasons), you can still define
    MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
 
 #ifdef MPFR_EXP_CHECK

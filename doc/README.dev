@@ -290,7 +290,7 @@ List of the used macros for building MPFR:
 
 + XDEBUG:               Use generic 'double' code instead of IEEE specific one.
                         The IEEE code for double needs GMP internal files.
-+ WANT_ASSERT:          Define if we want to turn on the assertions.
++ MPFR_WANT_ASSERT:     Define if we want to turn on the assertions.
 + MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
 + MPFR_PREC_FORMAT:     Define the internal format of prec field
