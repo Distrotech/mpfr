@@ -25,7 +25,11 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[3.1.3-dev])
 
-AM_INIT_AUTOMAKE([1.11 no-define dist-bzip2 dist-xz dist-zip])
+dnl Older Automake versions than 1.13 may still be supported, but no longer
+dnl tested, and many things have changed in 1.13. Moreover the INSTALL file
+dnl and MPFR manual assume that MPFR has been built using Automake 1.13+
+dnl (due to parallel tests, introduced by default in Automake 1.13).
+AM_INIT_AUTOMAKE([1.13 no-define dist-bzip2 dist-xz dist-zip])
 AM_MAINTAINER_MODE(enable)
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -41,6 +45,9 @@ dnl Check if user request its CC and CFLAGS
 if test -n "$CFLAGS" || test -n "$CC" ; then
  user_redefine_cc=yes
 fi
+
+dnl Basic Autoconf macros. At this point, they must not make Autoconf
+dnl choose a compiler because of the CC and CFLAGS setup from gmp.h!
 
 AC_CANONICAL_HOST
 
@@ -167,6 +174,10 @@ dnl
 dnl ********************************************************************
 dnl Check for CC and CFLAGS in gmp.h
 
+dnl Warning! The following tests must be done before Autoconf selects
+dnl a compiler. This means that some macros such as AC_PROG_CC and
+dnl AM_PROG_AR must be put after the following code.
+
 if test -z "$user_redefine_cc" && test "$cross_compiling" != yes ; then
 
 dnl We need to guess the C preprocessor instead of using AC_PROG_CPP,
@@ -237,6 +248,9 @@ dnl ********************************************************************
 AC_PROG_CC
 AC_PROG_CPP
 AC_LANG(C)
+
+dnl Support unusual archivers.
+AM_PROG_AR
 
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
