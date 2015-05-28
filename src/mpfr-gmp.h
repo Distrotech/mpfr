@@ -262,15 +262,17 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 #undef __gmp_allocate_func
 #undef __gmp_reallocate_func
 #undef __gmp_free_func
-#define MPFR_GET_MEMFUNC mp_get_memory_functions(&mpfr_allocate_func, &mpfr_reallocate_func, &mpfr_free_func)
+#define MPFR_GET_MEMFUNC                                        \
+  ((void) (MPFR_LIKELY (mpfr_allocate_func != 0) ||             \
+           (mp_get_memory_functions(&mpfr_allocate_func,        \
+                                    &mpfr_reallocate_func,      \
+                                    &mpfr_free_func), 1)))
 #define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
 #define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
 #define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
-__MPFR_DECLSPEC extern void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
-__MPFR_DECLSPEC extern void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *,
-                                                          size_t, size_t));
-__MPFR_DECLSPEC extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *,
-                                                                    size_t));
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
 
 #endif
 

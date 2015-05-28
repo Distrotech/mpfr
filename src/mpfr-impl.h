@@ -62,7 +62,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # include "config.h"
 #endif
 
-#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
+/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
+   no longer used, as they sometimes gave incorrect information about
+   the support of thread-local variables. A configure check is now done. */
+#include "mpfr-thread.h"
+
+#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals */
 
 # ifndef __GMP_H__
 #  include "gmp.h"
@@ -103,13 +108,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef mpn_sqr_n
 # define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
 #endif
-
-/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
-   no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done.
-   If the use of detection macros is needed in the future, this could be
-   moved below (after the detection macros are defined). */
-#include "mpfr-thread.h"
 
 
 /******************************************************
