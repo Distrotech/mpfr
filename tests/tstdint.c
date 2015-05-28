@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #if HAVE_STDINT_H
 
+#include <stdlib.h>
+
 #if _MPFR_EXP_FORMAT == 4
 /* If mpfr_exp_t is defined as intmax_t, intmax_t must be defined before
    the inclusion of mpfr.h (this test doesn't use mpfr-impl.h). */
