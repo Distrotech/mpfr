@@ -25,9 +25,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-
 static void
-test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
+test_urandomb (long nbtests, mpfr_prec_t prec, int verbose, char *s)
 {
   mpfr_t x;
   int *tab, size_tab, k, sh, xn;
@@ -58,6 +57,15 @@ test_urandomb (long nbtests, mpfr_prec_t prec, int verbose)
         }
       d = mpfr_get_d1 (x); av += d; var += d*d;
       tab[(int)(size_tab * d)]++;
+    }
+
+  if (s != NULL && mpfr_cmp_str (x, s, 2, MPFR_RNDN) != 0)
+    {
+      printf ("Error in test_urandomb:\n");
+      printf ("Expected %s\n", s);
+      printf ("Got      ");
+      mpfr_dump (x);
+      exit (1);
     }
 
   /* coverage test */
@@ -170,14 +178,23 @@ main (int argc, char *argv[])
   else
     prec = atol(argv[2]);
 
-  test_urandomb (nbtests, prec, verbose);
+  test_urandomb (nbtests, prec, verbose, NULL);
 
   if (argc == 1)  /* check also small precision */
     {
-      test_urandomb (nbtests, 2, 0);
+      test_urandomb (nbtests, 2, 0, NULL);
     }
 
   bug20100914 ();
+
+#if __MPFR_GMP(4,2,0)
+  /* Get a non-zero fixed-point number whose first 32 bits are 0 with the
+     default GMP PRNG. This corresponds to the case cnt == 0 && k != 0 in
+     src/urandomb.c with the 32-bit ABI. */
+  gmp_randseed_ui (mpfr_rands, 4518);
+  test_urandomb (575123, 40, 0,
+                 "0.1010111100000000000000000000000000000000E-32");
+#endif
 
   tests_end_mpfr ();
   return 0;
