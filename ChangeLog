@@ -1,4 +1,20 @@
 ------------------------------------------------------------------------
+r9582 | vlefevre | 2015-06-19 19:50:16 +0000 (Fri, 19 Jun 2015) | 1 line
+Changed paths:
+   M /branches/3.1/VERSION
+   M /branches/3.1/configure.ac
+   M /branches/3.1/doc/mpfr.texi
+   M /branches/3.1/src/mpfr.h
+   M /branches/3.1/src/version.c
+
+Updated version to 3.1.3.
+------------------------------------------------------------------------
+r9577 | vlefevre | 2015-06-12 15:37:01 +0000 (Fri, 12 Jun 2015) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r9576 | vlefevre | 2015-06-12 15:34:37 +0000 (Fri, 12 Jun 2015) | 4 lines
 Changed paths:
    M /branches/3.1
