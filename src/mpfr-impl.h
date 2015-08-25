@@ -995,7 +995,7 @@ extern unsigned char *mpfr_stack;
 #define mpfr_const_catalan(_d,_r) mpfr_cache(_d,__gmpfr_cache_const_catalan,_r)
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func)                           \
- mpfr_cache_t MPFR_THREAD_ATTR _cache =                              \
+  MPFR_THREAD_ATTR mpfr_cache_t _cache =                             \
     {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 
