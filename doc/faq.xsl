@@ -27,7 +27,7 @@ wget -q -O - http://www.mpfr.org/faq.html | \
 <xsl:template match="/">
   <xsl:text>&#10;</xsl:text>
   <xsl:comment>
-Copyright 2000-2015 Free Software Foundation, Inc.
+Copyright 2000-2016 Free Software Foundation, Inc.
 Contributed by the AriC and Caramel projects, INRIA.
 
 This file is part of the GNU MPFR Library.
