@@ -569,6 +569,30 @@ test_property2 (mpfr_prec_t p, mpfr_rnd_t r)
   mpfr_clear (y);
 }
 
+/* bug reported by Fredrik Johansson */
+static void
+bug20160120 (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 361);
+  mpfr_init2 (y, 64);
+
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_sqrt (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_check (y));
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+
+  mpfr_set_prec (y, 128);
+  mpfr_sqrt (y, x, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_check (y));
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+
+  mpfr_clear(x);
+  mpfr_clear(y);
+}
+
 #define TEST_FUNCTION test_sqrt
 #define TEST_RANDOM_POS 8
 #include "tgeneric.c"
@@ -703,6 +727,8 @@ main (void)
   test_generic (2, 300, 15);
   data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");
   bad_cases (mpfr_sqrt, mpfr_sqr, "mpfr_sqrt", 8, -256, 255, 4, 128, 800, 50);
+
+  bug20160120 ();
 
   tests_end_mpfr ();
   return 0;
