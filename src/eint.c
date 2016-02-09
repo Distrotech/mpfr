@@ -206,7 +206,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      /* exp(NaN) = exp(-Inf) = NaN */
+      /* eint(NaN) = eint(-Inf) = NaN */
       if (MPFR_IS_NAN (x) || (MPFR_IS_INF (x) && MPFR_IS_NEG(x)))
         {
           MPFR_SET_NAN (y);
