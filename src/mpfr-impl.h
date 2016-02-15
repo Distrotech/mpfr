@@ -865,7 +865,7 @@ typedef intmax_t mpfr_eexp_t;
 #define MPFR_IS_LIKE_RNDD(rnd, sign) \
   ((rnd==MPFR_RNDD) || (rnd==MPFR_RNDZ && sign>0) || (rnd==MPFR_RNDA && sign<0))
 
-/* Invert a rounding mode, RNDZ and RNDA are unchanged */
+/* Invert a rounding mode, RNDN, RNDZ and RNDA are unchanged */
 #define MPFR_INVERT_RND(rnd) ((rnd == MPFR_RNDU) ? MPFR_RNDD : \
                              ((rnd == MPFR_RNDD) ? MPFR_RNDU : rnd))
 
