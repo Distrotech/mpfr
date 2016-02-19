@@ -70,6 +70,9 @@ bits_fac (unsigned long n)
 {
   mpfr_t x, y;
   unsigned long r, k;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (x, 38);
   mpfr_init2 (y, 38);
   mpfr_set_ui (x, n, MPFR_RNDZ);
@@ -86,6 +89,8 @@ bits_fac (unsigned long n)
     r -= n / k;
   mpfr_clear (x);
   mpfr_clear (y);
+  MPFR_SAVE_EXPO_FREE (expo);
+
   return r;
 }
 
