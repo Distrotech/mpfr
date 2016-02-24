@@ -1,4 +1,28 @@
 ------------------------------------------------------------------------
+r10103 | vlefevre | 2016-02-24 01:27:46 +0000 (Wed, 24 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/NEWS
+
+[NEWS] Update for GNU MPFR 3.1.4.
+------------------------------------------------------------------------
+r10102 | vlefevre | 2016-02-24 01:25:32 +0000 (Wed, 24 Feb 2016) | 5 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/Makefile.am
+   A /branches/3.1/tools/ck-news (from /trunk/tools/ck-news:10101)
+
+Added tools/ck-news Perl script to check the NEWS file.
+In Makefile.am:
+  * run this script in dist-hook for "make dist";
+  * added this script to EXTRA_DIST as it is used in dist-hook.
+(merged changeset r10101 from the trunk)
+------------------------------------------------------------------------
+r10096 | vlefevre | 2016-02-23 22:17:20 +0000 (Tue, 23 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r10095 | vlefevre | 2016-02-23 22:15:13 +0000 (Tue, 23 Feb 2016) | 2 lines
 Changed paths:
    M /branches/3.1/VERSION
