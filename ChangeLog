@@ -1,4 +1,18 @@
 ------------------------------------------------------------------------
+r10106 | vlefevre | 2016-02-24 01:40:56 +0000 (Wed, 24 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/doc/mpfr.texi
+
+[doc/mpfr.texi] Fixed a warning with "make info".
+(merged changeset r10105 from the trunk)
+------------------------------------------------------------------------
+r10104 | vlefevre | 2016-02-24 01:30:08 +0000 (Wed, 24 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r10103 | vlefevre | 2016-02-24 01:27:46 +0000 (Wed, 24 Feb 2016) | 1 line
 Changed paths:
    M /branches/3.1/NEWS
