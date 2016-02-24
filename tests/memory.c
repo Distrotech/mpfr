@@ -68,7 +68,7 @@ tests_memory_valid (void *ptr)
 }
 */
 
-static void *
+void *
 tests_allocate (size_t size)
 {
   struct header  *h;
@@ -88,7 +88,7 @@ tests_allocate (size_t size)
   return h->ptr;
 }
 
-static void *
+void *
 tests_reallocate (void *ptr, size_t old_size, size_t new_size)
 {
   struct header  **hp, *h;
@@ -148,7 +148,7 @@ tests_free_nosize (void *ptr)
   __gmp_default_free (h, sizeof (*h));
 }
 
-static void
+void
 tests_free (void *ptr, size_t size)
 {
   struct header  **hp = tests_free_find (ptr);

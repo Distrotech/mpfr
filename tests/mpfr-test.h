@@ -105,6 +105,11 @@ int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
 #define mpfr_cmp0(x,y) (MPFR_ASSERTN (!MPFR_IS_NAN (x) && !MPFR_IS_NAN (y)), mpfr_cmp (x,y))
 #define mpfr_cmp_ui0(x,i) (MPFR_ASSERTN (!MPFR_IS_NAN (x)), mpfr_cmp_ui (x,i))
 
+/* Allocation */
+void *tests_allocate _MPFR_PROTO ((size_t));
+void *tests_reallocate _MPFR_PROTO ((void *, size_t, size_t));
+void tests_free _MPFR_PROTO ((void *, size_t));
+
 #if defined (__cplusplus)
 }
 #endif
