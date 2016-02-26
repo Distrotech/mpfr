@@ -434,7 +434,7 @@ then
  #define MPFR_USE_THREAD_SAFE 1
  #include "mpfr-thread.h"
  MPFR_THREAD_ATTR int x = 17;
- int main() {
+ int main (void) {
    return x != 17;
  }
    ]])],
