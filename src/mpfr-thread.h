@@ -31,12 +31,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef MPFR_THREAD_ATTR
 # ifdef MPFR_USE_THREAD_SAFE
 #  if defined(_MSC_VER)
-#   if defined(_WINDLL)
-#    error "Can't build MPFR DLL as thread safe."
-#    define MPFR_THREAD_ATTR
-#   else
-#    define MPFR_THREAD_ATTR __declspec( thread )
-#   endif
+#   define MPFR_THREAD_ATTR __declspec( thread )
+#  elif defined(MPFR_USE_C11_THREAD_SAFE)
+#   define MPFR_THREAD_ATTR _Thread_local
 #  else
 #   define MPFR_THREAD_ATTR __thread
 #  endif

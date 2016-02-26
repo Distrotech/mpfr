@@ -27,6 +27,12 @@ MPFR_THREAD_ATTR unsigned int __gmpfr_flags = 0;
 MPFR_THREAD_ATTR mpfr_exp_t __gmpfr_emin = MPFR_EMIN_DEFAULT;
 MPFR_THREAD_ATTR mpfr_exp_t __gmpfr_emax = MPFR_EMAX_DEFAULT;
 
+#ifdef MPFR_WIN_THREAD_SAFE_DLL
+unsigned int * __gmpfr_flags_f() { return &__gmpfr_flags; }
+mpfr_exp_t *   __gmpfr_emin_f()  { return &__gmpfr_emin; }
+mpfr_exp_t *   __gmpfr_emax_f()  { return &__gmpfr_emax; }
+#endif
+
 #undef mpfr_get_emin
 
 mpfr_exp_t
