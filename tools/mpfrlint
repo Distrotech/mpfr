@@ -48,6 +48,11 @@ grep '[^a-z_]snprintf *([^)]' $srctests
 # This test is a heuristic.
 grep 'MPFR_ASSERTD[^a-z]*;' src/*.c
 
+# ASSERT and ASSERT_ALWAYS must not be used for assertion checking.
+# Use MPFR_STAT_STATIC_ASSERT for static assertions, otherwise either
+# MPFR_ASSERTD (debug mode / hint for the compiler) or MPFR_ASSERTN.
+grep -E '[^_]ASSERT(_ALWAYS)? *(\(|$)' {src,tests}/*.c
+
 # Use MPFR_TMP_LIMBS_ALLOC.
 grep 'MPFR_TMP_ALLOC.*\(BYTES_PER_MP_LIMB\|sizeof.*mp_limb_t\)' src/*.c
 
