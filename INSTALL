@@ -524,9 +524,6 @@ a. Using MinGW
     https://sourceforge.net/projects/mingw-w64/ for 32- and 64-bit),
     which is simpler and less demanding than Cygwin. Contrary to Cygwin,
     it also provides native Windows code.
-    Currently, a MinGW build with shared libraries and TLS support is
-    known to produce test failures; we recommend building MPFR with
-    either --disable-shared or --disable-thread-safe.
 
 2 - If you just want to make a binary with gcc, there is nothing to do:
     GMP, MPFR and the program compile exactly as under Linux.
