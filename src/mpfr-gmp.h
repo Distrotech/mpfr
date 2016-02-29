@@ -405,6 +405,69 @@ typedef struct {mp_limb_t inv32;} mpfr_pi1_t; /* We changed gmp_pi1_t into
       }                                                                 \
   } while (0)
 
+/* ieee_double_extract structure (copied from GMP 6.1.0, gmp-impl.h) */
+
+/* Define ieee_double_extract and _GMP_IEEE_FLOATS.
+
+   Bit field packing is "implementation defined" according to C99, which
+   leaves us at the compiler's mercy here.  For some systems packing is
+   defined in the ABI (eg. x86).  In any case so far it seems universal that
+   little endian systems pack from low to high, and big endian from high to
+   low within the given type.
+
+   Within the fields we rely on the integer endianness being the same as the
+   float endianness, this is true everywhere we know of and it'd be a fairly
+   strange system that did anything else.  */
+
+#ifndef _GMP_IEEE_FLOATS
+
+#if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
+#define _GMP_IEEE_FLOATS 1
+union ieee_double_extract
+{
+  struct
+    {
+      unsigned long manh:20;
+      unsigned long exp:11;
+      unsigned long sig:1;
+      unsigned long manl:32;
+    } s;
+  double d;
+};
+#endif
+
+#if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
+#define _GMP_IEEE_FLOATS 1
+union ieee_double_extract
+{
+  struct
+    {
+      unsigned long manl:32;
+      unsigned long manh:20;
+      unsigned long exp:11;
+      unsigned long sig:1;
+    } s;
+  double d;
+};
+#endif
+
+#if HAVE_DOUBLE_IEEE_BIG_ENDIAN
+#define _GMP_IEEE_FLOATS 1
+union ieee_double_extract
+{
+  struct
+    {
+      unsigned long sig:1;
+      unsigned long exp:11;
+      unsigned long manh:20;
+      unsigned long manl:32;
+    } s;
+  double d;
+};
+#endif
+
+#endif /* _GMP_IEEE_FLOATS */
+
 #if defined (__cplusplus)
 }
 #endif
