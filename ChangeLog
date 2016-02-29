@@ -1,4 +1,126 @@
 ------------------------------------------------------------------------
+r10138 | vlefevre | 2016-02-29 04:07:54 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/NEWS
+
+[NEWS] Added "MinGW (MS Windows): Added support for thread-safe DLL
+(shared library)." (fix in r10119,10130).
+------------------------------------------------------------------------
+r10136 | vlefevre | 2016-02-29 03:56:39 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/INSTALL
+
+[INSTALL] Removed an obsolete sentence about MinGW and shared builds
+with TLS (the failures in the test suite were avoided in r10119,10130).
+------------------------------------------------------------------------
+r10133 | vlefevre | 2016-02-29 01:12:13 +0000 (Mon, 29 Feb 2016) | 6 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tversion.c
+
+[tests/tversion.c]
+  * Output support status of modifiers in gmp_printf (a bit like r10123
+    and r10124 in the trunk, except that macros PRINTF_T and PRINTF_L
+    do not exist and their absence means here "yes").
+  * Output availability of intmax_t/uintmax_t based functions and
+    *printf functions (merged changeset r10127 from the trunk).
+------------------------------------------------------------------------
+r10131 | vlefevre | 2016-02-26 14:43:04 +0000 (Fri, 26 Feb 2016) | 5 lines
+Changed paths:
+   M /branches/3.1/acinclude.m4
+
+[acinclude.m4] Replaced a "main()" (from the merge of r8245) by
+"main (void)" (the other similar changes were done in r9418 for
+the 3.1 branch and r8728 in the trunk, which is why r8245 did not
+have this change). Useful to configure & build with -Werror (this
+needs a patched autoconf).
+------------------------------------------------------------------------
+r10130 | vlefevre | 2016-02-26 12:05:16 +0000 (Fri, 26 Feb 2016) | 6 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/acinclude.m4
+   M /branches/3.1/src
+   M /branches/3.1/src/const_catalan.c
+   M /branches/3.1/src/const_euler.c
+   M /branches/3.1/src/const_log2.c
+   M /branches/3.1/src/const_pi.c
+   M /branches/3.1/src/exceptions.c
+   M /branches/3.1/src/mpfr-impl.h
+   M /branches/3.1/src/mpfr-thread.h
+   M /branches/3.1/src/set_dfl_prec.c
+   M /branches/3.1/src/set_rnd.c
+
+Better threading support:
+  * Support for _Thread_local (C11).
+  * Support build as thread-safe DLL on Windows (mainly changes
+    from Stephan Tolksdorf).
+(merged changesets r7954,8245,9684,9778 from the trunk, with
+mpfr_flags_t replaced by unsigned int)
+------------------------------------------------------------------------
+r10129 | zimmerma | 2016-02-26 10:09:44 +0000 (Fri, 26 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/INSTALL
+
+changed according to suggestion from Eli Zaretskii
+
+------------------------------------------------------------------------
+r10120 | vlefevre | 2016-02-25 01:43:51 +0000 (Thu, 25 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/INSTALL
+
+[INSTALL] Various updates for use with Windows applications.
+(merged changesets r9750-9751,9756-9757,9762-9767 from the trunk)
+------------------------------------------------------------------------
+r10119 | vlefevre | 2016-02-24 16:35:33 +0000 (Wed, 24 Feb 2016) | 7 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/memory.c
+   M /branches/3.1/tests/mpfr-test.h
+   M /branches/3.1/tests/tests.c
+   M /branches/3.1/tests/tgrandom.c
+   M /branches/3.1/tests/tset_str.c
+   M /branches/3.1/tests/tsum.c
+   M /branches/3.1/tools/mpfrlint
+
+In the tests, use tests_allocate and tests_free instead of
+(*__gmp_allocate_func) / malloc and (*__gmp_free_func) / free.
+Note: This follows the discussion at
+  https://sympa.inria.fr/sympa/arc/mpfr/2015-12/msg00055.html
+and should solve these problems under MS Windows (mingw32).
+(merged changesets r9891,10118 from the trunk, resolving conflicts
+to keep only the needed changes)
+------------------------------------------------------------------------
+r10117 | vlefevre | 2016-02-24 15:27:21 +0000 (Wed, 24 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/VERSION
+   M /branches/3.1/configure.ac
+   M /branches/3.1/doc/mpfr.texi
+   M /branches/3.1/src/mpfr.h
+   M /branches/3.1/src/version.c
+
+Updated version to 3.1.4-rc2.
+------------------------------------------------------------------------
+r10116 | vlefevre | 2016-02-24 15:22:37 +0000 (Wed, 24 Feb 2016) | 8 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/configure.ac
+
+[configure.ac] Try to link with GMP even when a DLL, since it seems
+to work now:
+  https://sympa.inria.fr/sympa/arc/mpfr/2013-05/msg00010.html
+  https://sympa.inria.fr/sympa/arc/mpfr/2015-12/msg00037.html
+Thus gmp_printf features (from the printf C function) are now tested,
+avoiding failures in the tests with thread-safe shared Windows builds
+using MinGW.
+(merged changeset r8524 from the trunk)
+------------------------------------------------------------------------
+r10107 | vlefevre | 2016-02-24 01:51:14 +0000 (Wed, 24 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r10106 | vlefevre | 2016-02-24 01:40:56 +0000 (Wed, 24 Feb 2016) | 2 lines
 Changed paths:
    M /branches/3.1
