@@ -252,40 +252,6 @@ AC_LANG(C)
 dnl Support unusual archivers.
 AM_PROG_AR
 
-dnl Try to determine the double format
-AC_MSG_CHECKING(format of `double')
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <stdint.h>
-]], [[
-union ieee_double_extract
-{
-  double d;
-  uint32_t x[2];
-} t;
-t.d = 1.000000476837158203125; /* 1 + 1/2^21, which has manl = 2^31,
-    manh = 0, exp = 1023 and sig = 0 */
-if (t.x[0] == 2147483648UL && t.x[1] == 1072693248UL)
-   return 1; /* little endian */
-else if (t.x[0] == 1072693248UL && t.x[1] == 2147483648UL)
-   return 2; /* little endian swapped */
-else if (t.x[0] == 1024 && t.x[1] == 2147483648UL)
-   return 3; /* big endian */
-else
-   return 0; /* unknown */
-]])],
-   [mpfr_ieee_double=$?],
-   [mpfr_ieee_double=$?],
-   [mpfr_ieee_double=0])
-case "$mpfr_ieee_double" in
-  1) AC_MSG_RESULT(little endian)
-     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_ENDIAN) ;;
-  2) AC_MSG_RESULT(little endian swapped)
-     AC_DEFINE(HAVE_DOUBLE_IEEE_LITTLE_SWAPPED) ;;
-  3) AC_MSG_RESULT(big endian)
-     AC_DEFINE(HAVE_DOUBLE_IEEE_BIG_ENDIAN) ;;
-  *) AC_MSG_ERROR(format of 'double' not recognized) ;;
-esac
-
 dnl For GCC, _Decimal64 was introduced in GCC 4.3 for some targets
 dnl (note that it is not guaranteed to be available because it may
 dnl be disabled in the GCC build). See:
@@ -304,12 +270,17 @@ AC_ARG_ENABLE(decimal-float,
            AC_MSG_CHECKING(if compiler knows _Decimal64)
            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[_Decimal64 x;]])],
               [AC_MSG_RESULT(yes)
-               AC_MSG_CHECKING(if 'double' format is known)
-               case $mpfr_ieee_double in
-               0) AC_MSG_RESULT(no)
-                  AC_MSG_ERROR([unknown 'double' format]) ;;
-               *) AC_MSG_RESULT(yes)
-               esac
+               if test "$use_gmp_build" != yes ; then
+                  AC_MSG_ERROR([decimal float support requires --with-gmp-build])
+               fi
+               AC_MSG_CHECKING(if _GMP_IEEE_FLOATS is defined)
+               AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+#include "gmp-impl.h"
+#ifndef _GMP_IEEE_FLOATS
+#error "_GMP_IEEE_FLOATS is not defined"
+#endif]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+                  AC_MSG_ERROR([decimal float support requires _GMP_IEEE_FLOATS])])
               ],
               [AC_MSG_RESULT(no)
 AC_MSG_ERROR([Compiler doesn't know _Decimal64 (ISO/IEC TR 24732).
