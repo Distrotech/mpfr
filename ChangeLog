@@ -1,4 +1,127 @@
 ------------------------------------------------------------------------
+r10200 | vlefevre | 2016-03-06 11:20:09 +0000 (Sun, 06 Mar 2016) | 1 line
+Changed paths:
+   M /branches/3.1/doc/mpfr.texi
+
+[doc/mpfr.texi] Updated the month.
+------------------------------------------------------------------------
+r10199 | vlefevre | 2016-03-06 11:17:33 +0000 (Sun, 06 Mar 2016) | 1 line
+Changed paths:
+   M /branches/3.1/VERSION
+   M /branches/3.1/configure.ac
+   M /branches/3.1/doc/mpfr.texi
+   M /branches/3.1/src/mpfr.h
+   M /branches/3.1/src/version.c
+
+Updated version to 3.1.4.
+------------------------------------------------------------------------
+r10197 | vlefevre | 2016-03-04 14:08:33 +0000 (Fri, 04 Mar 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/INSTALL
+
+[INSTALL] Some improvement about MinGW and __USE_MINGW_ANSI_STDIO.
+(merged changeset r10196 from the trunk)
+------------------------------------------------------------------------
+r10184 | vlefevre | 2016-03-02 15:17:53 +0000 (Wed, 02 Mar 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tversion.c
+
+[tests/tversion.c] Improved output of compiler information.
+(merge changesets r9695-9696,10170,10181-10182 from the trunk)
+------------------------------------------------------------------------
+r10176 | vlefevre | 2016-03-02 00:50:40 +0000 (Wed, 02 Mar 2016) | 3 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/src
+   M /branches/3.1/src/get_flt.c
+
+[src/get_flt.c] FIXME: The code assumes the IEEE-754 binary32 format
+with subnormal support.
+(merged changeset r10175 from the trunk)
+------------------------------------------------------------------------
+r10174 | vlefevre | 2016-03-02 00:32:46 +0000 (Wed, 02 Mar 2016) | 3 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tget_flt.c
+
+[tests/tget_flt.c] Do tests that may involve subnormals only
+if HAVE_DENORMS is defined.
+(merged changeset r10173 from the trunk)
+------------------------------------------------------------------------
+r10167 | vlefevre | 2016-03-01 15:44:58 +0000 (Tue, 01 Mar 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tget_flt.c
+
+[tests/tget_flt.c] Use DOUBLE_ISNAN() instead of f == f.
+(merge changesets r10160,10163 from the trunk)
+------------------------------------------------------------------------
+r10166 | vlefevre | 2016-03-01 15:41:03 +0000 (Tue, 01 Mar 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/INSTALL
+
+[INSTALL] Updated "Notes on AIX/PowerPC".
+(merged changeset r10161 from the trunk)
+------------------------------------------------------------------------
+r10149 | zimmerma | 2016-02-29 20:29:40 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/configure.ac
+   M /branches/3.1/src/mpfr-gmp.h
+
+reverted commit 10144 (wrongly applied to branch 3.1 instead of trunk)
+
+------------------------------------------------------------------------
+r10148 | vlefevre | 2016-02-29 18:07:10 +0000 (Mon, 29 Feb 2016) | 3 lines
+Changed paths:
+   M /branches/3.1/tools/mpfrlint
+
+[tools/mpfrlint] ASSERT and ASSERT_ALWAYS must not be used for
+assertion checking.
+(merge changesets r8123,8589,10147 from the trunk, only for mpfrlint)
+------------------------------------------------------------------------
+r10146 | vlefevre | 2016-02-29 17:47:01 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tget_d.c
+   M /branches/3.1/tests/tget_d_2exp.c
+   M /branches/3.1/tests/tget_ld_2exp.c
+
+Replaced the remaining ASSERT_ALWAYS by MPFR_ASSERTN.
+(merged changeset r10145 from the trunk)
+------------------------------------------------------------------------
+r10144 | zimmerma | 2016-02-29 17:31:52 +0000 (Mon, 29 Feb 2016) | 4 lines
+Changed paths:
+   M /branches/3.1/configure.ac
+   M /branches/3.1/src/mpfr-gmp.h
+
+native detection of ieee_double_extract (work in progress),
+this will allow to have decimal-float support without gmp-build
+(and also faster set_d/get_d)
+
+------------------------------------------------------------------------
+r10143 | zimmerma | 2016-02-29 17:22:30 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/tests/tget_set_d64.c
+
+fixed assert macros
+
+------------------------------------------------------------------------
+r10142 | zimmerma | 2016-02-29 16:06:17 +0000 (Mon, 29 Feb 2016) | 2 lines
+Changed paths:
+   M /branches/3.1/src/mpfr-gmp.h
+
+fixed typo
+
+------------------------------------------------------------------------
+r10139 | vlefevre | 2016-02-29 04:17:22 +0000 (Mon, 29 Feb 2016) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r10138 | vlefevre | 2016-02-29 04:07:54 +0000 (Mon, 29 Feb 2016) | 2 lines
 Changed paths:
    M /branches/3.1/NEWS
