@@ -42,7 +42,7 @@ main (void)
 
 #else
 
-#define ERROR(str) {printf("Error for "str"\n"); exit(1);}
+#define ERROR(str) { printf ("Error for " str "\n"); exit (1); }
 
 static int
 inexact_sign (int x)
