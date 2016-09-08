@@ -193,6 +193,62 @@ test_fixed_bugs (void)
   mpfr_clear (x);
 }
 
+/* bug reported by Walter Mascarenhas
+   https://sympa.inria.fr/sympa/arc/mpfr/2016-09/msg00005.html */
+static void
+bug_20160907 (void)
+{
+#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
+  long double dn = 1.0, ld;
+  mpfr_t mp;
+  mpfr_exp_t e = 0;
+
+  while (dn * (long double) 0.5 != 0)
+    {
+      dn = dn * (long double) 0.5;
+      e --;
+    }
+  /* dn=2^e is now the smallest subnormal */
+
+  mpfr_init2 (mp, 64);
+  mpfr_set_ui_2exp (mp, 1, e - 1, MPFR_RNDN);
+  ld = mpfr_get_ld (mp, MPFR_RNDU);
+  /* since mp = 2^(e-1) and ld is rounded upwards, we should have
+     ld = 2^e */
+  if (ld != dn)
+    {
+      printf ("Error, ld = %Le <> dn = %Le\n", ld, dn);
+      printf ("mp=");
+      mpfr_out_str (stdout, 10, 0, mp, MPFR_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  /* check a few more numbers */
+  for (e = -16446; e <= -16381; e++)
+    {
+      mpfr_set_ui_2exp (mp, 1, e, MPFR_RNDN);
+      ld = mpfr_get_ld (mp, MPFR_RNDU);
+      mpfr_set_ld (mp, ld, MPFR_RNDU);
+      /* mp is 2^e rounded up, thus should be >= 2^e */
+      MPFR_ASSERTN(mpfr_cmp_ui_2exp (mp, 1, e) >= 0);
+
+      mpfr_set_ui_2exp (mp, 1, e, MPFR_RNDN);
+      ld = mpfr_get_ld (mp, MPFR_RNDD);
+      mpfr_set_ld (mp, ld, MPFR_RNDD);
+      /* mp is 2^e rounded down, thus should be <= 2^e */
+      if (mpfr_cmp_ui_2exp (mp, 3, e) > 0)
+        {
+          printf ("Error, expected value <= 2^%ld\n", e);
+          printf ("got "); mpfr_dump (mp);
+          exit (1);
+        }
+    }
+
+  mpfr_clear (mp);
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -308,6 +364,8 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   test_small ();
+
+  bug_20160907 ();
 
   tests_end_mpfr ();
 
