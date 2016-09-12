@@ -199,18 +199,21 @@ static void
 bug_20160907 (void)
 {
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-  long double dn, ld, t = 1.0;
+  long double dn, ld;
   mpfr_t mp;
-  long e = 1;
+  long e;
+  mpfr_long_double_t x;
 
-  do
-    {
-      e--;
-      dn = t;
-      t = dn * (long double) 0.5;
-    }
-  while (t != 0);
-  /* dn=2^e is now the smallest subnormal */
+  /* the following is the encoding of the smallest subnormal number
+     for HAVE_LDOUBLE_IEEE_EXT_LITTLE */
+  x.s.manl = 1;
+  x.s.manh = 0;
+  x.s.expl = 0;
+  x.s.exph = 0;
+  x.s.sign= 0;
+  dn = x.ld;
+  e = -16445;
+  /* dn=2^e is now the smallest subnormal. */
 
   mpfr_init2 (mp, 64);
   mpfr_set_ui_2exp (mp, 1, e - 1, MPFR_RNDN);
