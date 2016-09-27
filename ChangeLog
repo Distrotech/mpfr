@@ -1,4 +1,46 @@
 ------------------------------------------------------------------------
+r10891 | vlefevre | 2016-09-27 07:48:20 +0000 (Tue, 27 Sep 2016) | 1 line
+Changed paths:
+   M /branches/3.1/VERSION
+   M /branches/3.1/configure.ac
+   M /branches/3.1/doc/mpfr.texi
+   M /branches/3.1/src/mpfr.h
+   M /branches/3.1/src/version.c
+
+Updated version to 3.1.5.
+------------------------------------------------------------------------
+r10889 | vlefevre | 2016-09-23 14:09:21 +0000 (Fri, 23 Sep 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/examples/version.c
+
+[examples/version.c] A bit more output.
+(merged changeset r10888 from the trunk)
+------------------------------------------------------------------------
+r10887 | vlefevre | 2016-09-23 13:57:32 +0000 (Fri, 23 Sep 2016) | 2 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/examples/version.c
+
+[examples/version.c] Update from the trunk (with svn merge on
+changesets r8034,8036,8128,10885-10886).
+------------------------------------------------------------------------
+r10873 | vlefevre | 2016-09-14 08:09:05 +0000 (Wed, 14 Sep 2016) | 4 lines
+Changed paths:
+   M /branches/3.1
+   M /branches/3.1/tests/tdiv.c
+
+[tests/tdiv.c] Improved code readability, fixing a small bug
+(found by David Binderman using cppcheck) at the same time.
+This bug could only affect the error message if the test failed.
+(merged changesets r10871-10872 from the trunk)
+------------------------------------------------------------------------
+r10868 | vlefevre | 2016-09-13 17:17:12 +0000 (Tue, 13 Sep 2016) | 1 line
+Changed paths:
+   M /branches/3.1/ChangeLog
+
+ChangeLog update with "TZ=UTC svn log -rHEAD:0 -v" (in UTF-8 locales).
+------------------------------------------------------------------------
 r10867 | vlefevre | 2016-09-13 17:09:26 +0000 (Tue, 13 Sep 2016) | 1 line
 Changed paths:
    M /branches/3.1/doc/mpfr.texi
